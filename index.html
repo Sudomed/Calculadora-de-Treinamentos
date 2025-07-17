@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Proposta - Sudomed</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+    h2 { text-align: center; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; }
+    input, select, button { width: 100%; padding: 10px; font-size: 16px; }
+    button { background: #1e90ff; color: white; border: none; cursor: pointer; }
+    button:hover { background: #1c86ee; }
+    .result { margin-top: 20px; background: #fff; padding: 15px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Calculadora de Propostas - Sudomed</h2>
+
+  <div class="form-group">
+    <label>Nome de quem está fazendo a proposta:</label>
+    <input type="text" id="proponente">
+  </div>
+
+  <div class="form-group">
+    <label>Nome da empresa cliente:</label>
+    <input type="text" id="empresa">
+  </div>
+
+  <div class="form-group">
+    <label>Treinamento NR:</label>
+    <select id="treinamento">
+      <option value="NR5">NR 5</option>
+      <option value="NR6">NR 6</option>
+      <option value="NR10">NR 10</option>
+      <option value="NR12">NR 12</option>
+      <option value="NR33">NR 33</option>
+      <option value="NR35">NR 35</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Valor por hora (R$):</label>
+    <input type="number" id="valorHora" value="200">
+  </div>
+
+  <div class="form-group">
+    <label>Número de horas do treinamento:</label>
+    <input type="number" id="horas">
+  </div>
+
+  <div class="form-group">
+    <label>Número de alunos:</label>
+    <input type="number" id="alunos">
+  </div>
+
+  <div class="form-group">
+    <label>Quilômetros de deslocamento (só ida):</label>
+    <input type="number" id="km">
+  </div>
+
+  <div class="form-group">
+    <label>Locação de espaço?</label>
+    <select id="usaEspaco">
+      <option value="nao">Não</option>
+      <option value="sim">Sim</option>
+    </select>
+  </div>
+
+  <div class="form-group" id="campoEspaco" style="display:none;">
+    <label>Valor da locação por dia (R$):</label>
+    <input type="number" id="valorEspaco">
+  </div>
+
+  <button onclick="calcularProposta()">Calcular Proposta</button>
+
+  <div class="result" id="resultado"></div>
+
+  <script>
+    document.getElementById('usaEspaco').addEventListener('change', function() {
+      document.getElementById('campoEspaco').style.display = this.value === 'sim' ? 'block' : 'none';
+    });
+
+    function calcularProposta() {
+      const valorHora = parseFloat(document.getElementById('valorHora').value);
+      const horas = parseFloat(document.getElementById('horas').value);
+      const km = parseFloat(document.getElementById('km').value);
+      const alunos = parseInt(document.getElementById('alunos').value);
+      const usaEspaco = document.getElementById('usaEspaco').value === 'sim';
+      const valorEspaco = usaEspaco ? parseFloat(document.getElementById('valorEspaco').value) : 0;
+
+      const diaria = Math.ceil(horas / 8);
+
+      const valorTreinamento = valorHora * horas;
+      const deslocamento = km * 2 * 2.5; // ida e volta
+      const alimentacaoInstrutor = 100 * diaria;
+      const alimentacaoAlunos = 35 * alunos * diaria;
+      const aluguelCarro = 100 * diaria;
+      const locacaoEspaco = valorEspaco * diaria;
+
+      const total = valorTreinamento + deslocamento + alimentacaoInstrutor + alimentacaoAlunos + aluguelCarro + locacaoEspaco;
+
+      document.getElementById('resultado').innerHTML = `
+        <strong>Valor total da proposta:</strong> R$ ${total.toFixed(2).replace('.', ',')}<br><br>
+        <strong>Resumo:</strong><br>
+        - Valor do treinamento: R$ ${valorTreinamento.toFixed(2)}<br>
+        - Deslocamento: R$ ${deslocamento.toFixed(2)}<br>
+        - Alimentação do instrutor: R$ ${alimentacaoInstrutor.toFixed(2)}<br>
+        - Alimentação dos alunos: R$ ${alimentacaoAlunos.toFixed(2)}<br>
+        - Aluguel do carro: R$ ${aluguelCarro.toFixed(2)}<br>
+        - Locação de espaço: R$ ${locacaoEspaco.toFixed(2)}<br>
+        <br><strong>Diárias calculadas:</strong> ${diaria}
+      `;
+    }
+  </script>
+</body>
+</html>
